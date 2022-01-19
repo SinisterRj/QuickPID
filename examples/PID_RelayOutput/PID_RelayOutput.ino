@@ -43,6 +43,9 @@ void setup()
   //tell the PID to range between 0 and the full window size
   myPID.SetOutputLimits(0, WindowSize);
 
+  //define PID timer to window size
+  myPID.SetSampleTimeUs(WindowSize * 1000); 
+   
   //apply PID gains
   myPID.SetTunings(Kp, Ki, Kd);
 
@@ -57,11 +60,8 @@ void loop()
   /************************************************
      turn the output pin on/off based on pid output
    ************************************************/
-  if (millis() - windowStartTime >= WindowSize)
-  { //time to shift the Relay Window
-    windowStartTime += WindowSize;
-    myPID.Compute();
-  }
+  myPID.Compute(); // Just update once in a window time.
+ 
   if (((unsigned int)Output > minWindow) && ((unsigned int)Output > (millis() - windowStartTime))) digitalWrite(RELAY_PIN, HIGH);
   else digitalWrite(RELAY_PIN, LOW);
 }
